@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import uk.sliske.util.IO.WebIO;
@@ -14,7 +13,7 @@ import uk.sliske.util.graphics.Window;
 
 public class Main {
 
-	static List<Node> nodes = new ArrayList<>();
+	
 	public static void main(String... args) {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
@@ -28,11 +27,11 @@ public class Main {
 			int width = image.getWidth();
 			int height = image.getHeight();
 			long t = System.currentTimeMillis();
-			nodes.addAll(map.findPath(map.get(0, 0), map.get(width - 1, height - 1)));
+			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
 
 			long e = System.currentTimeMillis();
 			new Window("path", "Pathfinding", image.getWidth(), image.getHeight() + 30) {
-				private static final long	serialVersionUID	= -4211049829020118604L;
+				private static final long	serialVersionUID	= 1L;
 
 				public void paint(Graphics g) {
 					g.drawImage(image, 0, 0, null);
