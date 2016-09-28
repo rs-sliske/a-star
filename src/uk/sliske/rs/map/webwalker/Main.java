@@ -18,9 +18,17 @@ public class Main {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
 
+		testWithImage("https://sliske.uk/img/captures/cabb115209f3ff3.png");
+
+		// test(4500, 4500, 3);
+		// testSet(3);
+
+	}
+	
+	static void testWithImage(String url){
 		BufferedImage image;
 		try {
-			image = WebIO.loadBImageFromWeb("https://sliske.uk/img/captures/728355426ab26e1.png");
+			image = WebIO.loadBImageFromWeb(url);
 			
 			
 			Map map = new Map(image);
@@ -30,14 +38,24 @@ public class Main {
 			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
 
 			long e = System.currentTimeMillis();
-			new Window("path", "Pathfinding", image.getWidth(), image.getHeight() + 30) {
+			new Window("path", "Pathfinding", width, height + 30) {
 				private static final long	serialVersionUID	= 1L;
 
 				public void paint(Graphics g) {
-					g.drawImage(image, 0, 0, null);
+//					g.drawImage(image, 0, 0, null);
+					
+					Node[] tiles = map.nodes();
+					for(Node n : tiles){
+						g.setColor(n.walkable ? Color.white : Color.black);
+						g.fillRect(n.x, n.y, 1, 1);
+					}
+					
+						
+					
+					
 					Node last = null;
 					Graphics2D g2 = (Graphics2D) g;
-				    g2.setStroke(new BasicStroke(3));
+				    g2.setStroke(new BasicStroke(1));
 					g.setColor(Color.red);
 					for(Node n : nodes){
 						if(last != null){
@@ -56,14 +74,6 @@ public class Main {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
-		// test(4500, 4500, 3);
-		// testSet(3);
-
-	}
-	
-	static void paint(Graphics g){
-		
 	}
 
 	static void testSet(int ratio) {

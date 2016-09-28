@@ -109,7 +109,7 @@ public class Map {
 			if (current.equals(end))
 				return retracePath(start, current);
 
-//			 System.out.println("checking -> "+ current);
+			// System.out.println("checking -> "+ current);
 
 			closed.add(current);
 
@@ -142,11 +142,18 @@ public class Map {
 			current = current.parent();
 		}
 
+		Node last = null;
 		ArrayList<Node> res = new ArrayList<>();
-		for (Node n : temp)
-			res.add(n);
-
+		for (Node n : temp) {
+			if (last == null || distanceBetween(n, last) >= 25) {
+				res.add(n);
+				last = n;
+			}
+		}
 		return res;
 	}
 
+	public Node[] nodes() {
+		return nodes;
+	}
 }
