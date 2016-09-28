@@ -20,10 +20,10 @@ public class Map {
 		Random rand = new Random();
 
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0);
+			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0, 1);
 		}
 		nodes[0].walkable = true;
-		nodes[nodes.length -1].walkable = true;
+		nodes[nodes.length - 1].walkable = true;
 
 	}
 
@@ -34,10 +34,15 @@ public class Map {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				int p = image.getRGB(x, y);
-				// System.out.printf("| %x ", p);
-				nodes[x + y * width] = new Node(x, y, p >= 0xffffffff);
+				int r = (p & 0xff0000) >> 16;
+				int g = (p & 0xff00) >> 8;
+				float fg = (float) g;
+				float w = 1 - (fg / 256);
+//				System.out.printf("p:%x\tr:%x\tg:%x\n", p, r, g);
+				nodes[x + y * width] = new Node(x, y, r != 0x00,1);//w);
 			}
-			// System.out.println("|");
+		
+			continue;
 		}
 	}
 
@@ -63,15 +68,15 @@ public class Map {
 		res.add(top);
 		res.add(bottom);
 
-		// if (left != null && left.walkable) {
-		res.add(get(x - 1, y - 1));
-		res.add(get(x - 1, y + 1));
-		// }
+		if (left != null && left.walkable) {
+			res.add(get(x - 1, y - 1));
+			res.add(get(x - 1, y + 1));
+		}
 
-		// if (right != null && right.walkable) {
-		res.add(get(x + 1, y - 1));
-		res.add(get(x + 1, y + 1));
-		// }
+		if (right != null && right.walkable) {
+			res.add(get(x + 1, y - 1));
+			res.add(get(x + 1, y + 1));
+		}
 
 		if (top != null && top.walkable) {
 			res.add(get(x - 1, y - 1));
@@ -93,9 +98,10 @@ public class Map {
 		int dx = Math.abs(start.x - end.x);
 		int dy = Math.abs(start.y - end.y);
 
-		// return Math.max(dx, dy);
+		int min = Math.min(dx, dy);
+		int max = Math.max(dx, dy);
 
-		return (int) Math.sqrt((dx * dx) + (dy * dy));
+		return (min * 10) + (max * 10);
 	}
 
 	public List<Node> findPath(Node start, Node end) {
@@ -118,17 +124,17 @@ public class Map {
 			closed.add(current);
 
 			for (Node n : neighbours(current)) {
-				if (closed.contains(n)) {
+				if (!n.walkable || closed.contains(n)) {
 					continue;
 				}
 
-				int gscore = current.gCost() + distanceBetween(current, n);
-				if (!open.contains(n))
+				int gscore = (int) (current.gCost() + (distanceBetween(current, n) * n.weight));
+				if (!open.contains(n)){
 					open.put(n);
-				else
+				}else{
 					if (gscore >= n.gCost())
 						continue;
-
+				}
 				n.parent(current);
 				n.gCost(gscore);
 			}
@@ -149,11 +155,12 @@ public class Map {
 		Node last = null;
 		ArrayList<Node> res = new ArrayList<>();
 		for (Node n : temp) {
-			if (last == null || distanceBetween(n, last) >= 1) {
+			if (last == null || distanceBetween(n, last) >= 5) {
 				res.add(n);
 				last = n;
 			}
 		}
+		res.add(start);
 		return res;
 	}
 

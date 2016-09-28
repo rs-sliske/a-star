@@ -11,52 +11,57 @@ public class Heap {
 		this.itemCount = 0;
 	}
 
-	public boolean put(Node item) {
-		if (itemCount >= maxSize) {
-			return false;
-		}
-
-		data[itemCount] = item;
+	public void put(Node item) {
 		item.heapIndex = itemCount;
-		itemCount++;
-
+		data[itemCount] = item;
 		sortUp(item);
-
-		return true;
+		itemCount++;
 	}
-	
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return itemCount <= 0;
 	}
-	
-	public boolean contains(Node n){
-		if(n.heapIndex < 0 || n.heapIndex >= itemCount)
+
+	public boolean contains(Node n) {
+		if (n.heapIndex < 0 || n.heapIndex >= itemCount)
 			return false;
 		return data[n.heapIndex].equals(n);
 	}
 
 	private void sortUp(Node item) {
+		int parentIndex = (item.heapIndex - 1) / 2;
+
 		while (true) {
-			int parentIndex = (item.heapIndex - 1) / 2;
-			if(parentIndex <= 0)
-				break;
 			Node parentItem = data[parentIndex];
-			if (item.compareTo(parentItem) < 0) {
-//				System.out.printf("swapping node at %s with node at %s\n", item, parentItem);
+			if (item.compareTo(parentItem) > 0) {
 				swap(item, parentItem);
 			} else {
 				break;
 			}
+
+			parentIndex = (item.heapIndex - 1) / 2;
 		}
 	}
 
 	public Node pop() {
-		Node res = data[0];
+		int t = 0;
+		for (int i = 0; i < itemCount; i++) {
+			if (data[i].fCost() < data[t].fCost()) {
+				t = i;
+				continue;
+			}
+		}
+		Node res = data[t];
+
+		swap(res, data[itemCount - 1]);
 
 		itemCount--;
-		data[0] = data[itemCount];
 
-		sortDown(data[0]);
+//		 Node res = data[0];
+//		 itemCount--;
+//		 data[0] = data[itemCount];
+//		 data[0].heapIndex = 0;
+//		 sortDown(data[0]);
 
 		return res;
 	}
@@ -89,12 +94,12 @@ public class Heap {
 		}
 	}
 
-	private void swap(Node first, Node second) {
-		data[first.heapIndex] = second;
-		data[second.heapIndex] = first;
-		int temp = first.heapIndex;
-		first.heapIndex = second.heapIndex;
-		second.heapIndex = temp;
+	private void swap(Node itemA, Node itemB) {
+		data[itemA.heapIndex] = itemB;
+		data[itemB.heapIndex] = itemA;
+		int itemAIndex = itemA.heapIndex;
+		itemA.heapIndex = itemB.heapIndex;
+		itemB.heapIndex = itemAIndex;
 	}
 
 }

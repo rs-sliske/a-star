@@ -18,9 +18,9 @@ public class Main {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
 
-//		testWithImage("https://sliske.uk/img/captures/728355426ab26e1.png");
+		testWithImage("https://sliske.uk/img/captures/65dcfb62773abff.png");
 
-		 test(64, 64, 5);
+//		 test(4, 4, 10);
 		// testSet(3);
 
 	}
@@ -34,16 +34,18 @@ public class Main {
 			int width = image.getWidth();
 			int height = image.getHeight();
 			long t = System.currentTimeMillis();
-			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
+			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 10, height - 10));
 			
 			final int scale = 1;
 
 			long e = System.currentTimeMillis();
+			
+			if(nodes != null){
 
 			show(width, height, scale, map.nodes(), nodes);
 
 			System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
-
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -61,11 +63,12 @@ public class Main {
 
 				Node last = null;
 				Graphics2D g2 = (Graphics2D) g;
-				g2.setStroke(new BasicStroke(scale/4));
+				g2.setStroke(new BasicStroke(2));
 				g.setColor(Color.red);
+				int t = scale / 2;
 				for (Node n : path) {
 					if (last != null) {
-						g2.drawLine(last.x *scale - (scale / 2), last.y *scale - (scale / 2), n.x *scale - (scale / 2), n.y *scale - (scale / 2));
+						g2.drawLine(last.x *scale + t, last.y *scale + t, n.x *scale + t, n.y *scale + t);
 					}
 					last = n;
 				}
