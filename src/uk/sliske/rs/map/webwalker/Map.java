@@ -22,6 +22,8 @@ public class Map {
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0);
 		}
+		nodes[0].walkable = true;
+		nodes[nodes.length -1].walkable = true;
 
 	}
 
@@ -32,10 +34,10 @@ public class Map {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				int p = image.getRGB(x, y);
-//				System.out.printf("| %x ", p);
+				// System.out.printf("| %x ", p);
 				nodes[x + y * width] = new Node(x, y, p >= 0xffffffff);
 			}
-//			System.out.println("|");
+			// System.out.println("|");
 		}
 	}
 
@@ -61,15 +63,15 @@ public class Map {
 		res.add(top);
 		res.add(bottom);
 
-//		if (left != null && left.walkable) {
-			res.add(get(x - 1, y - 1));
-			res.add(get(x - 1, y + 1));
-//		}
+		// if (left != null && left.walkable) {
+		res.add(get(x - 1, y - 1));
+		res.add(get(x - 1, y + 1));
+		// }
 
-//		if (right != null && right.walkable) {
-			res.add(get(x + 1, y - 1));
-			res.add(get(x + 1, y + 1));
-//		}
+		// if (right != null && right.walkable) {
+		res.add(get(x + 1, y - 1));
+		res.add(get(x + 1, y + 1));
+		// }
 
 		if (top != null && top.walkable) {
 			res.add(get(x - 1, y - 1));
@@ -111,7 +113,7 @@ public class Map {
 			if (current.equals(end))
 				return retracePath(start, current);
 
-//			 System.out.println("checking -> "+ current);
+			// System.out.println("checking -> "+ current);
 
 			closed.add(current);
 

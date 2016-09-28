@@ -61,11 +61,11 @@ public class Main {
 
 				Node last = null;
 				Graphics2D g2 = (Graphics2D) g;
-				g2.setStroke(new BasicStroke(scale/2));
+				g2.setStroke(new BasicStroke(scale/4));
 				g.setColor(Color.red);
 				for (Node n : path) {
 					if (last != null) {
-						g2.drawLine(last.x *scale, last.y *scale - (scale / 2), n.x *scale, n.y *scale - (scale / 2));
+						g2.drawLine(last.x *scale - (scale / 2), last.y *scale - (scale / 2), n.x *scale - (scale / 2), n.y *scale - (scale / 2));
 					}
 					last = n;
 				}
