@@ -11,29 +11,11 @@ public class Node {
 
 	int					heapIndex;
 	boolean				walkable;
-	public float	weight;
 
-	public Node(int x, int y, boolean walkable, float weight) {
+	public Node(int x, int y, boolean walkable) {
 		this.x = x;
 		this.y = y;
 		this.walkable = walkable;
-		this.weight= weight;
-	}
-
-	public int compareTo(Node other) {
-		if (fCost() > other.fCost()) {
-			return -1;
-		}
-		if (fCost() < other.fCost()) {
-			return 1;
-		}
-		if (hCost() > other.hCost()) {
-			return -1;
-		}
-		if (hCost() < other.hCost()) {
-			return 1;
-		}
-		return -1;
 	}
 
 	public int hCost() {
@@ -73,6 +55,11 @@ public class Node {
 
 	public String toString() {
 		return x + " : " + y;
+	}
+
+	public int hashCode() {
+		return x << 16 | y;
+
 	}
 
 }

@@ -2,8 +2,11 @@ package uk.sliske.rs.map.webwalker;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -20,7 +23,7 @@ public class Map {
 		Random rand = new Random();
 
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0, 1);
+			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0);
 		}
 		nodes[0].walkable = true;
 		nodes[nodes.length - 1].walkable = true;
@@ -35,11 +38,11 @@ public class Map {
 			for (int y = 0; y < height; y++) {
 				int p = image.getRGB(x, y);
 				int r = (p & 0xff0000) >> 16;
-				int g = (p & 0xff00) >> 8;
-				float fg = (float) g;
-				float w = 1 - (fg / 256);
+//				int g = (p & 0xff00) >> 8;
+//				float fg = (float) g;
+//				float w = 1 - (fg / 256);
 //				System.out.printf("p:%x\tr:%x\tg:%x\n", p, r, g);
-				nodes[x + y * width] = new Node(x, y, r != 0x00,1);//w);
+				nodes[x + y * width] = new Node(x, y, r != 0x00);
 			}
 		
 			continue;
@@ -101,7 +104,7 @@ public class Map {
 		int min = Math.min(dx, dy);
 		int max = Math.max(dx, dy);
 
-		return (min * 10) + (max * 10);
+		return (min * 14) + (max * 10);
 	}
 
 	public List<Node> findPath(Node start, Node end) {
@@ -109,17 +112,26 @@ public class Map {
 			n.hCost(distanceBetween(n, end));
 		}
 
-		Heap open = new Heap(nodes.length);
 		HashSet<Node> closed = new HashSet<>();
+		Queue<Node> open = new PriorityQueue<>((int)Math.sqrt(nodes.length), new Comparator<Node>() {
 
-		open.put(start);
+			@Override
+			public int compare(Node o1, Node o2) {
+				if(o1.fCost() != o2.fCost())
+					return Integer.compare(o1.fCost(), o2.fCost());
+				
+				return Integer.compare(o1.hCost(), o2.hCost());
+			}
+		}) ;
+
+		open.add(start);
 
 		while (!open.isEmpty()) {
-			Node current = open.pop();
+			Node current = open.poll();
 			if (current.equals(end))
 				return retracePath(start, current);
 
-			// System.out.println("checking -> "+ current);
+			 System.out.printf("checking -> %s : %d\n", current, current.fCost());
 
 			closed.add(current);
 
@@ -128,9 +140,9 @@ public class Map {
 					continue;
 				}
 
-				int gscore = (int) (current.gCost() + (distanceBetween(current, n) * n.weight));
+				int gscore = current.gCost() + distanceBetween(current, n);
 				if (!open.contains(n)){
-					open.put(n);
+					open.add(n);
 				}else{
 					if (gscore >= n.gCost())
 						continue;
