@@ -104,10 +104,11 @@ public class Map {
 		int min = Math.min(dx, dy);
 		int max = Math.max(dx, dy);
 
-		return (min * 14) + (max * 10);
+		return (min * 14) + ((max-min)  * 10);
 	}
 
 	public List<Node> findPath(Node start, Node end) {
+				
 		for (Node n : nodes) {
 			n.hCost(distanceBetween(n, end));
 		}
@@ -167,7 +168,7 @@ public class Map {
 		Node last = null;
 		ArrayList<Node> res = new ArrayList<>();
 		for (Node n : temp) {
-			if (last == null || distanceBetween(n, last) >= 5) {
+			if (last == null || distanceBetween(n, last) >= 1) {
 				res.add(n);
 				last = n;
 			}

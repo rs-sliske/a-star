@@ -18,10 +18,12 @@ public class Main {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
 
-		 testWithImage("https://sliske.uk/img/captures/65dcfb62773abff.png");
+		 testWithImage("https://sliske.uk/img/captures/42748147d05d954.png");
+		 testWithImage("https://sliske.uk/img/captures/669b45e279eef4e.png");
+		 
 
-		 test(64, 64, 10, true);
-//		testSet(3);
+//		 test(64, 64, 10, true);
+		testSet(3);
 
 	}
 
@@ -34,25 +36,28 @@ public class Main {
 			int width = image.getWidth();
 			int height = image.getHeight();
 			long t = System.currentTimeMillis();
-			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 10, height - 10));
+			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
 
-			final int scale = 1;
+			final int scale = width < 800 ? 800 / width : 1;
 
 			long e = System.currentTimeMillis();
 
 			if (nodes != null) {
 
-				show(width, height, scale, map.nodes(), nodes);
+				show(width, height,String.format("Pathfinding : %d nodes in %dms", width * height, e-t), scale, map.nodes(), nodes);
 
 				System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
+			}
+			else {
+				System.out.printf("no path found in %d ms\n", e - t);
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
 
-	static void show(int width, int height, int scale, Node[] nodes, Collection<Node> path) {
-		new Window("path", "Pathfinding", width * scale, (height * scale) + 30) {
+	static void show(int width, int height,String title, int scale, Node[] nodes, Collection<Node> path) {
+		new Window("path", title, width * scale, (height * scale) + 30) {
 			private static final long	serialVersionUID	= 1L;
 
 			public void paint(Graphics g) {
@@ -105,7 +110,7 @@ public class Main {
 
 		long e = System.currentTimeMillis();
 		if (show)
-			show(width, height, width < 800 ? 800 / width : 1, map.nodes(), path);
+			show(width, height,String.format("Pathfinding : %d nodes in %dms", width * height, e-t), width < 800 ? 800 / width : 1, map.nodes(), path);
 
 		System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
 	}
