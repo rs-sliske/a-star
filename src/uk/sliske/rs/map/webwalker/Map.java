@@ -20,7 +20,7 @@ public class Map {
 		Random rand = new Random();
 
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) == 0);
+			nodes[i] = new Node(i % width, i / width, rand.nextInt(ratio) != 0);
 		}
 
 	}
@@ -31,8 +31,11 @@ public class Map {
 		nodes = new Node[width * height];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				nodes[x + y * width] = new Node(x, y, image.getRGB(x, y) <= 0x0);
+				int p = image.getRGB(x, y);
+//				System.out.printf("| %x ", p);
+				nodes[x + y * width] = new Node(x, y, p >= 0xffffffff);
 			}
+//			System.out.println("|");
 		}
 	}
 
@@ -58,15 +61,15 @@ public class Map {
 		res.add(top);
 		res.add(bottom);
 
-		if (left != null && left.walkable) {
+//		if (left != null && left.walkable) {
 			res.add(get(x - 1, y - 1));
 			res.add(get(x - 1, y + 1));
-		}
+//		}
 
-		if (right != null && right.walkable) {
+//		if (right != null && right.walkable) {
 			res.add(get(x + 1, y - 1));
 			res.add(get(x + 1, y + 1));
-		}
+//		}
 
 		if (top != null && top.walkable) {
 			res.add(get(x - 1, y - 1));
@@ -100,7 +103,6 @@ public class Map {
 
 		Heap open = new Heap(nodes.length);
 		HashSet<Node> closed = new HashSet<>();
-		// Heap closed = new Heap(nodes.length);
 
 		open.put(start);
 
@@ -109,7 +111,7 @@ public class Map {
 			if (current.equals(end))
 				return retracePath(start, current);
 
-			// System.out.println("checking -> "+ current);
+//			 System.out.println("checking -> "+ current);
 
 			closed.add(current);
 
@@ -145,7 +147,7 @@ public class Map {
 		Node last = null;
 		ArrayList<Node> res = new ArrayList<>();
 		for (Node n : temp) {
-			if (last == null || distanceBetween(n, last) >= 25) {
+			if (last == null || distanceBetween(n, last) >= 1) {
 				res.add(n);
 				last = n;
 			}

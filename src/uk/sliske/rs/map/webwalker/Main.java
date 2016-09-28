@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import uk.sliske.util.IO.WebIO;
@@ -13,67 +14,64 @@ import uk.sliske.util.graphics.Window;
 
 public class Main {
 
-	
 	public static void main(String... args) {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
 
-		testWithImage("https://sliske.uk/img/captures/cabb115209f3ff3.png");
+//		testWithImage("https://sliske.uk/img/captures/728355426ab26e1.png");
 
-		// test(4500, 4500, 3);
+		 test(64, 64, 5);
 		// testSet(3);
 
 	}
-	
-	static void testWithImage(String url){
+
+	static void testWithImage(String url) {
 		BufferedImage image;
 		try {
 			image = WebIO.loadBImageFromWeb(url);
-			
-			
-			Map map = new Map(image);
+
+			final Map map = new Map(image);
 			int width = image.getWidth();
 			int height = image.getHeight();
 			long t = System.currentTimeMillis();
 			final List<Node> nodes = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
+			
+			final int scale = 1;
 
 			long e = System.currentTimeMillis();
-			new Window("path", "Pathfinding", width, height + 30) {
-				private static final long	serialVersionUID	= 1L;
 
-				public void paint(Graphics g) {
-//					g.drawImage(image, 0, 0, null);
-					
-					Node[] tiles = map.nodes();
-					for(Node n : tiles){
-						g.setColor(n.walkable ? Color.white : Color.black);
-						g.fillRect(n.x, n.y, 1, 1);
-					}
-					
-						
-					
-					
-					Node last = null;
-					Graphics2D g2 = (Graphics2D) g;
-				    g2.setStroke(new BasicStroke(1));
-					g.setColor(Color.red);
-					for(Node n : nodes){
-						if(last != null){
-							g2.drawLine(last.x, last.y, n.x, n.y);							
-						}
-						last = n;
-					}
-				}
-				
-			};
+			show(width, height, scale, map.nodes(), nodes);
 
 			System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
-			
-			
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+	}
+	
+	static void show(int width, int height, int scale, Node[] nodes, Collection<Node> path){
+		new Window("path", "Pathfinding", width*scale, (height*scale) + 30) {
+			private static final long	serialVersionUID	= 1L;
+
+			public void paint(Graphics g) {
+				for (Node n : nodes) {
+					g.setColor(n.walkable ? Color.white : Color.black);
+					g.fillRect(n.x *scale, n.y *scale, scale, scale);
+				}
+
+				Node last = null;
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setStroke(new BasicStroke(scale/2));
+				g.setColor(Color.red);
+				for (Node n : path) {
+					if (last != null) {
+						g2.drawLine(last.x *scale, last.y *scale - (scale / 2), n.x *scale, n.y *scale - (scale / 2));
+					}
+					last = n;
+				}
+			}
+
+		};
 	}
 
 	static void testSet(int ratio) {
@@ -100,9 +98,11 @@ public class Main {
 	static void test(int width, int height, int ratio) {
 		Map map = new Map(width, height, ratio);
 		long t = System.currentTimeMillis();
-		map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
+		List<Node> path = map.findPath(map.get(0, 0), map.get(width - 1, height - 1));
 
 		long e = System.currentTimeMillis();
+		
+		show(width,height,width < 800 ? 800/width : 1, map.nodes(), path);
 
 		System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
 	}

@@ -38,8 +38,11 @@ public class Heap {
 	private void sortUp(Node item) {
 		while (true) {
 			int parentIndex = (item.heapIndex - 1) / 2;
+			if(parentIndex <= 0)
+				break;
 			Node parentItem = data[parentIndex];
-			if (item.compareTo(parentItem) > 0) {
+			if (item.compareTo(parentItem) < 0) {
+//				System.out.printf("swapping node at %s with node at %s\n", item, parentItem);
 				swap(item, parentItem);
 			} else {
 				break;
