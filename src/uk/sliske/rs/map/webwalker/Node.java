@@ -16,6 +16,7 @@ public class Node {
 		this.x = x;
 		this.y = y;
 		this.walkable = walkable;
+		g= 0x8ff00000;
 	}
 
 	public int hCost() {

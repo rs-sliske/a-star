@@ -38,13 +38,13 @@ public class Map {
 			for (int y = 0; y < height; y++) {
 				int p = image.getRGB(x, y);
 				int r = (p & 0xff0000) >> 16;
-//				int g = (p & 0xff00) >> 8;
-//				float fg = (float) g;
-//				float w = 1 - (fg / 256);
-//				System.out.printf("p:%x\tr:%x\tg:%x\n", p, r, g);
+				// int g = (p & 0xff00) >> 8;
+				// float fg = (float) g;
+				// float w = 1 - (fg / 256);
+				// System.out.printf("p:%x\tr:%x\tg:%x\n", p, r, g);
 				nodes[x + y * width] = new Node(x, y, r != 0x00);
 			}
-		
+
 			continue;
 		}
 	}
@@ -71,26 +71,29 @@ public class Map {
 		res.add(top);
 		res.add(bottom);
 
-		if (left != null && left.walkable) {
-			res.add(get(x - 1, y - 1));
-			res.add(get(x - 1, y + 1));
-		}
+		boolean diagonals = true;
 
-		if (right != null && right.walkable) {
-			res.add(get(x + 1, y - 1));
-			res.add(get(x + 1, y + 1));
-		}
+		if (diagonals) {
+			if (left != null && left.walkable) {
+				res.add(get(x - 1, y - 1));
+				res.add(get(x - 1, y + 1));
+			}
 
-		if (top != null && top.walkable) {
-			res.add(get(x - 1, y - 1));
-			res.add(get(x + 1, y - 1));
-		}
+			if (right != null && right.walkable) {
+				res.add(get(x + 1, y - 1));
+				res.add(get(x + 1, y + 1));
+			}
 
-		if (bottom != null && bottom.walkable) {
-			res.add(get(x - 1, y + 1));
-			res.add(get(x + 1, y + 1));
-		}
+			if (top != null && top.walkable) {
+				res.add(get(x - 1, y - 1));
+				res.add(get(x + 1, y - 1));
+			}
 
+			if (bottom != null && bottom.walkable) {
+				res.add(get(x - 1, y + 1));
+				res.add(get(x + 1, y + 1));
+			}
+		}
 		res.remove(null);
 
 		return res;
@@ -104,35 +107,39 @@ public class Map {
 		int min = Math.min(dx, dy);
 		int max = Math.max(dx, dy);
 
-		return (min * 14) + ((max-min)  * 10);
+		return (min * 14) + ((max - min) * 10);
 	}
 
 	public List<Node> findPath(Node start, Node end) {
-				
+
 		for (Node n : nodes) {
 			n.hCost(distanceBetween(n, end));
 		}
 
 		HashSet<Node> closed = new HashSet<>();
-		Queue<Node> open = new PriorityQueue<>((int)Math.sqrt(nodes.length), new Comparator<Node>() {
+		Queue<Node> open = new PriorityQueue<>((int) Math.sqrt(nodes.length),
+				new Comparator<Node>() {
 
-			@Override
-			public int compare(Node o1, Node o2) {
-				if(o1.fCost() != o2.fCost())
-					return Integer.compare(o1.fCost(), o2.fCost());
-				
-				return Integer.compare(o1.hCost(), o2.hCost());
-			}
-		}) ;
+					@Override
+					public int compare(Node o1, Node o2) {
+						if (o1.fCost() != o2.fCost())
+							return Integer.compare(o1.fCost(), o2.fCost());
+
+						return Integer.compare(o1.hCost(), o2.hCost());
+					}
+				});
 
 		open.add(start);
-
+		int i = 0;
 		while (!open.isEmpty()) {
+			i++;
 			Node current = open.poll();
-			if (current.equals(end))
+			if (current.equals(end)) {
+				System.out.printf("found path after %d iterations\n", i);
+				Main.i = i;
 				return retracePath(start, current);
-
-			 System.out.printf("checking -> %s : %d\n", current, current.fCost());
+			}
+			System.out.printf("checking -> %s : %d\n", current, current.fCost() & 0xfffff);
 
 			closed.add(current);
 
@@ -142,9 +149,9 @@ public class Map {
 				}
 
 				int gscore = current.gCost() + distanceBetween(current, n);
-				if (!open.contains(n)){
+				if (!open.contains(n)) {
 					open.add(n);
-				}else{
+				} else {
 					if (gscore >= n.gCost())
 						continue;
 				}

@@ -13,17 +13,19 @@ import uk.sliske.util.IO.WebIO;
 import uk.sliske.util.graphics.Window;
 
 public class Main {
+	
+	static int i;
 
 	public static void main(String... args) {
 		// for (int i = 0; i < 10; i++)
 		// testSet(i + 1);
 
-		 testWithImage("https://sliske.uk/img/captures/42748147d05d954.png");
+//		 testWithImage("https://sliske.uk/img/captures/42748147d05d954.png");
 		 testWithImage("https://sliske.uk/img/captures/669b45e279eef4e.png");
 		 
 
-//		 test(64, 64, 10, true);
-		testSet(3);
+//		 test(6000, 4000, 10, true);
+//		testSet(3);
 
 	}
 
@@ -44,7 +46,7 @@ public class Main {
 
 			if (nodes != null) {
 
-				show(width, height,String.format("Pathfinding : %d nodes in %dms", width * height, e-t), scale, map.nodes(), nodes);
+				show(width, height,String.format("Pathfinding : %d/%d nodes in %dms",i, width * height, e-t), scale, map.nodes(), nodes);
 
 				System.out.printf("%7d nodes : path found in %d ms\n", width * height, e - t);
 			}
